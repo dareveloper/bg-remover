@@ -1,38 +1,26 @@
-from flask import Flask, render_template, request, send_file, redirect, url_for
-from rembg import remove
+from flask import Flask, render_template, request
 import os
-from io import BytesIO
 
 app = Flask(__name__)
 
-# Ensure the folder exists for saving images temporarily
-if not os.path.exists('static/uploads'):
-    os.makedirs('static/uploads')
+UPLOAD_FOLDER = 'uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg'}
 
-@app.route("/", methods=["GET", "POST"])
-def home():
-    if request.method == "POST":
-        file = request.files["image"]
-        if file:
-            # Read the file and remove the background
-            input_image = file.read()
-            output_image = remove(input_image)
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-            # Save the processed image to a temporary location
-            filename = file.filename
-            output_path = os.path.join('static/uploads', filename)
-            with open(output_path, "wb") as f:
-                f.write(output_image)
+@app.route('/', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            return 'No file part'
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            file.save(filename)
+            return 'File uploaded successfully'
+    return render_template('index.html')
 
-            # Return the file path for the preview
-            return render_template("index.html", preview_image=filename)
-
-    return render_template("index.html")
-
-@app.route("/download/<filename>")
-def download(filename):
-    # Provide the processed image for download
-    return send_file(os.path.join('static/uploads', filename), as_attachment=True)
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)
