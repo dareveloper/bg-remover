@@ -4,91 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Background Remover</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f8ff;
-            text-align: center;
-            padding: 20px;
-        }
-
-        h1 {
-            color: #005f6a;
-        }
-
-        .form-container {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        input[type="file"] {
-            margin: 10px 0;
-        }
-
-        button {
-            background-color: #005f6a;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #00494f;
-        }
-
-        .preview-container {
-            margin-top: 20px;
-        }
-
-        img {
-            max-width: 100%;
-            max-height: 300px;
-            border: 2px solid #005f6a;
-            border-radius: 10px;
-        }
-
-        .download-button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #00494f;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .download-button:hover {
-            background-color: #00363d;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Upload an Image to Remove the Background</h1>
-    <div class="form-container">
+    <div class="container">
+        <h1>Upload an Image to Remove the Background</h1>
         <form action="/" method="POST" enctype="multipart/form-data">
-            <input type="file" name="image" required>
+            <input type="file" name="file" accept="image/*" required>
             <button type="submit">Upload</button>
-            <form action="/" method="POST" enctype="multipart/form-data">
-    <input type="file" name="file">
-    <input type="submit" value="Upload">
-
-
         </form>
-    </div>
-
-    {% if preview_image %}
-        <div class="preview-container">
-            <h2>Preview of Image with Background Removed</h2>
-            <img src="{{ url_for('static', filename='uploads/' + preview_image) }}" alt="Processed Image">
-            <a href="{{ url_for('download', filename=preview_image) }}">
-                <button class="download-button">Download Image</button>
-            </a>
+        
+        {% if filename %}
+        <div class="uploaded-image">
+            <h2>Uploaded Image</h2>
+            <img src="{{ url_for('uploaded_file', filename=filename) }}" alt="Uploaded Image">
         </div>
-    {% endif %}
+        {% endif %}
+    </div>
 </body>
 </html>
